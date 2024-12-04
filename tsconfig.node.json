@@ -2,6 +2,7 @@
   "compilerOptions": {
     "composite": true,
     "module": "ESNext",
+    "lib": ["ESNext"],
     "skipLibCheck": true,
 
     /* Bundler mode */
