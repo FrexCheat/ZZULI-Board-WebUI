@@ -1,14 +1,29 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import Layouts from 'vite-plugin-vue-layouts'
 import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import VueRouter from 'unplugin-vue-router/vite'
+import { VueRouterAutoImports } from 'unplugin-vue-router'
 
 export default defineConfig({
   plugins: [
+    VueRouter({
+      routesFolder: 'src/pages',
+      dts: 'typed-router.d.ts',
+    }),
     vue(),
+    Layouts({
+      layoutsDirs: 'src/layouts',
+    }),
     AutoImport({
-      imports: ['vue', 'vue-router'],
+      imports: ['vue', VueRouterAutoImports],
       dts: 'auto-imports.d.ts',
     }),
+    Components({
+      dts: 'components.d.ts',
+      dirs: ['src/components']
+    })
   ],
   build: {
     chunkSizeWarningLimit: 4000,
