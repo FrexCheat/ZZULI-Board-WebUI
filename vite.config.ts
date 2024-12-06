@@ -17,13 +17,13 @@ export default defineConfig({
       layoutsDirs: 'src/layouts',
     }),
     AutoImport({
-      imports: ['vue', VueRouterAutoImports],
+      imports: ['vue', '@vueuse/core', VueRouterAutoImports],
       dts: 'src/auto-imports.d.ts',
     }),
     Components({
       dts: 'src/components.d.ts',
-      dirs: ['src/components']
-    })
+      dirs: ['src/components'],
+    }),
   ],
   build: {
     chunkSizeWarningLimit: 4000,
