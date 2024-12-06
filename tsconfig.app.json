@@ -6,6 +6,11 @@
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": [
+      "vite/client",
+      "vite-plugin-vue-layouts/client",
+      "unplugin-vue-router/client"
+    ],
     "skipLibCheck": true,
 
     /* Bundler mode */
@@ -32,6 +37,7 @@
     "src/**/*.vue",
     "auto-imports.d.ts",
     "components.d.ts",
-    "typed-router.d.ts"
+    "typed-router.d.ts",
+    "node_modules/tdesign-vue-next/global.d.ts"
   ]
 }

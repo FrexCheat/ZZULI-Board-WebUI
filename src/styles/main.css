@@ -1,5 +1,27 @@
 @import './fonts.css';
 
+:root {
+  --td-font-family: 'CommitMono', 'Harmony', PingFang SC, Microsoft YaHei, Arial Regular;
+  --td-font-family-medium: 'CommitMono', 'Harmony', PingFang SC, Microsoft YaHei, Arial Regular;
+  --brand-main: var(--td-brand-color-8);
+  --td-brand-color-light: var(--td-brand-color-1);
+  --td-brand-color-focus: var(--td-brand-color-2);
+  --td-brand-color-disabled: var(--td-brand-color-3);
+  --td-brand-color-hover: var(--td-brand-color-7);
+  --td-brand-color: var(--td-brand-color-8);
+  --td-brand-color-active: var(--td-brand-color-9);
+  --td-brand-color-1: #eff3ff;
+  --td-brand-color-2: #d5e2ff;
+  --td-brand-color-3: #adcaff;
+  --td-brand-color-4: #89aef2;
+  --td-brand-color-5: #6d93d5;
+  --td-brand-color-6: #5178b8;
+  --td-brand-color-7: #365e9c;
+  --td-brand-color-8: #164481;
+  --td-brand-color-9: #003068;
+  --td-brand-color-10: #001f47;
+}
+
 html,
 body,
 #app {
@@ -7,4 +29,14 @@ body,
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+body,
+#app {
+  font-family:
+    'CommitMono',
+    'Harmony',
+    PingFang SC,
+    Microsoft YaHei,
+    Arial Regular;
 }

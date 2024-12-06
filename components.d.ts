@@ -7,7 +7,21 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ArrowRightIcon: typeof import('tdesign-icons-vue-next')['ArrowRightIcon']
+    Footer: typeof import('./src/components/Footer.vue')['default']
+    JumpIcon: typeof import('tdesign-icons-vue-next')['JumpIcon']
+    Logo: typeof import('./src/components/icon/Logo.vue')['default']
+    LogoGithubFilledIcon: typeof import('tdesign-icons-vue-next')['LogoGithubFilledIcon']
+    LogoQqFilledIcon: typeof import('tdesign-icons-vue-next')['LogoQqFilledIcon']
+    MailIcon: typeof import('tdesign-icons-vue-next')['MailIcon']
+    NavBar: typeof import('./src/components/NavBar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TBadge: typeof import('tdesign-vue-next')['Badge']
+    TButton: typeof import('tdesign-vue-next')['Button']
+    TInput: typeof import('tdesign-vue-next')['Input']
+    TLink: typeof import('tdesign-vue-next')['Link']
+    TTooltip: typeof import('tdesign-vue-next')['Tooltip']
+    UserAddIcon: typeof import('tdesign-icons-vue-next')['UserAddIcon']
   }
 }
