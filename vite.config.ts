@@ -10,7 +10,7 @@ export default defineConfig({
   plugins: [
     VueRouter({
       routesFolder: 'src/pages',
-      dts: 'typed-router.d.ts',
+      dts: 'src/typed-router.d.ts',
     }),
     vue(),
     Layouts({
@@ -18,10 +18,10 @@ export default defineConfig({
     }),
     AutoImport({
       imports: ['vue', VueRouterAutoImports],
-      dts: 'auto-imports.d.ts',
+      dts: 'src/auto-imports.d.ts',
     }),
     Components({
-      dts: 'components.d.ts',
+      dts: 'src/components.d.ts',
       dirs: ['src/components']
     })
   ],
