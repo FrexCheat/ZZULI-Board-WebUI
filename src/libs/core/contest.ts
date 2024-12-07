@@ -179,3 +179,19 @@ export async function getContestList(): Promise<Contest[]> {
   }
   return resp
 }
+
+export async function getContestNormalConfig(id: string): Promise<Contest> {
+  const resp = await get<ContestInstance>('/api/contest/config?contest_id=' + id)
+  if (resp) {
+    return createContest(resp)
+  }
+  return resp
+}
+
+export async function getContestAdminConfig(id: string): Promise<Contest> {
+  const resp = await get<ContestInstance>('/api/admin/contest/config?contest_id=' + id)
+  if (resp) {
+    return createContest(resp)
+  }
+  return resp
+}

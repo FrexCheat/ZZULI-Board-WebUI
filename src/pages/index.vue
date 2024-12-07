@@ -2,6 +2,7 @@
 import { Contest, getContestList } from '../libs/core/contest'
 const router = useRouter()
 const interval = ref<number>()
+const contestLoading = ref(true)
 const searchInput = ref('')
 const contestList = ref<Contest[] | []>([])
 const searchList = ref<Contest[] | []>([])
@@ -19,6 +20,7 @@ watch(searchInput, (newValue) => {
 })
 onMounted(async () => {
   contestList.value = await getContestList()
+  contestLoading.value = false
   searchList.value = contestList.value
   onUpdateContestStatus()
   interval.value = setInterval(() => {
@@ -31,14 +33,14 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <main lg:mt--42px>
-    <div flex flex-col gap-3 items-center>
-      <div w-60rem>
-        <t-input v-model="searchInput" clearable size="large" placeholder="搜索比赛名称"></t-input>
-      </div>
-      <div flex flex-col items-center gap-1rem mt-15px>
-        <div v-for="item in searchList" :key="item.id" flex flex-col gap-0.7rem border-b-solid border-b-slate-200
-          border-b-2 w-60rem>
+  <main flex justify-center lg:mt--42px>
+    <div flex flex-col gap-3 w-960px>
+      <t-input v-model="searchInput" clearable size="large" placeholder="搜索比赛名称"></t-input>
+      <div flex flex-col gap-1rem mt-15px>
+        <Loading v-if="contestLoading"></Loading>
+        <t-empty v-else-if="searchList.length === 0" size="large" />
+        <div v-else v-for="item in searchList" :key="item.id" flex flex-col gap-0.7rem border-b-solid border-b-slate-200
+          border-b-2>
           <div flex gap-10px text-size-1.3rem items-center>
             <div>
               <img :src="item.getLogo()" alt="logo" block size-2.5rem />
@@ -71,14 +73,14 @@ onUnmounted(() => {
               </div>
             </div>
             <div flex flex-row float-right gap-0.4rem justify-end>
-              <t-button theme="primary" shape="round" size="large" :disabled="item.contestStatus !== 1"
+              <t-button theme="primary" shape="round" size="large" v-if="item.contestStatus === 1"
                 @click="router.push(item.getRegisterUrl())">
                 <template #icon>
                   <UserAddIcon />
                 </template>
                 报名
               </t-button>
-              <t-button theme="primary" shape="circle" size="large" :disabled="item.contestStatus !== 3"
+              <t-button theme="primary" shape="circle" size="large" v-if="item.contestStatus >= 3"
                 @click="router.push(item.getBoardUrl())">
                 <template #icon>
                   <ArrowRightIcon />

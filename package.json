@@ -16,6 +16,7 @@
     "js-cookie": "^3.0.5",
     "tdesign-icons-vue-next": "^0.3.3",
     "tdesign-vue-next": "^1.10.4",
+    "unocss-preset-scrollbar-hide": "^1.0.1",
     "vue": "^3.5.13",
     "vue-router": "4"
   },

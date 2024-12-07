@@ -52,7 +52,7 @@ request.interceptors.response.use(
   },
 )
 
-export async function get<T>(url: string, params?: Record<string, unknown>): Promise<T> {
+export async function get<T>(url: string, params?: any): Promise<T> {
   try {
     const resp = await request.get(url, { params }).then((response) => response.data)
     return resp.data
@@ -62,9 +62,13 @@ export async function get<T>(url: string, params?: Record<string, unknown>): Pro
   }
 }
 
-export async function post<T>(url: string, data?: Record<string, unknown>): Promise<T> {
+export async function post<T>(url: string, data?: any): Promise<T> {
   try {
     const resp = await request.post(url, data).then((response) => response.data)
+    MessagePlugin.success('操作成功')
+    setTimeout(() => {
+      router.go(0)
+    }, 2000)
     return resp.data
   } catch (error) {
     MessagePlugin.error(error as string)
