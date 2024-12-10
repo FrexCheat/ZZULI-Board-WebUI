@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ArrowRightIcon: typeof import('tdesign-icons-vue-next')['ArrowRightIcon']
+    CloudDownloadIcon: typeof import('tdesign-icons-vue-next')['CloudDownloadIcon']
     DeleteIcon: typeof import('tdesign-icons-vue-next')['DeleteIcon']
     Footer: typeof import('./src/components/Footer.vue')['default']
     InfoCircleFilledIcon: typeof import('tdesign-icons-vue-next')['InfoCircleFilledIcon']

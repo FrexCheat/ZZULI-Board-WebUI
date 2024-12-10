@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import { Contest, getContestList } from '../libs/core/contest'
-const router = useRouter()
 const interval = ref<number>()
 const contestLoading = ref(true)
 const searchInput = ref('')
 const contestList = ref<Contest[] | []>([])
 const searchList = ref<Contest[] | []>([])
+const openNewPage = (url: string) => {
+  window.open(url)
+}
 const onUpdateContestStatus = () => {
   contestList.value.forEach((contest) => {
     contest.updateContestStatus()
   })
-}
-const openNewPage = (url: string) => {
-  window.open(url)
 }
 watch(searchInput, (newValue) => {
   if (!newValue) {
@@ -23,12 +22,14 @@ watch(searchInput, (newValue) => {
 })
 onMounted(async () => {
   contestList.value = await getContestList()
-  contestLoading.value = false
-  searchList.value = contestList.value
-  onUpdateContestStatus()
-  interval.value = setInterval(() => {
+  if (contestList.value) {
+    searchList.value = contestList.value
     onUpdateContestStatus()
-  }, 1000)
+    interval.value = setInterval(() => {
+      onUpdateContestStatus()
+    }, 1000)
+  }
+  contestLoading.value = false
 })
 onUnmounted(() => {
   clearInterval(interval.value)
@@ -42,8 +43,7 @@ onUnmounted(() => {
       <div flex flex-col gap-1rem mt-15px>
         <Loading v-if="contestLoading"></Loading>
         <t-empty v-else-if="searchList.length === 0" size="large" />
-        <div v-else v-for="item in searchList" :key="item.id" flex flex-col gap-0.7rem border-b-solid border-b-slate-200
-          border-b-2>
+        <div v-else v-for="item in searchList" :key="item.id" flex flex-col gap-0.7rem border-b-solid border-b-slate-200 border-b-2>
           <div flex gap-10px text-size-1.3rem items-center>
             <div>
               <img :src="item.getLogo()" alt="logo" block size-2.5rem />
@@ -71,20 +71,17 @@ onUnmounted(() => {
                 <strong>{{ item.statusStr }}</strong>
               </div>
               <div class="progress">
-                <div :data-status="item.contestStatus" class="progress-warrper"
-                  :style="{ width: `${item.progressRatio}%` }"></div>
+                <div :data-status="item.contestStatus" class="progress-warrper" :style="{ width: `${item.progressRatio}%` }"></div>
               </div>
             </div>
             <div flex flex-row float-right gap-0.4rem justify-end>
-              <t-button theme="primary" shape="round" size="large" v-if="item.contestStatus === 1"
-                @click="openNewPage(item.getRegisterUrl())">
+              <t-button theme="primary" shape="round" size="large" v-if="item.contestStatus === 1" @click="openNewPage(item.getRegisterUrl())">
                 <template #icon>
                   <UserAddIcon />
                 </template>
                 报名
               </t-button>
-              <t-button theme="primary" shape="circle" size="large" v-if="item.contestStatus >= 3"
-                @click="openNewPage(item.getBoardUrl())">
+              <t-button theme="primary" shape="circle" size="large" v-if="item.contestStatus >= 3" @click="openNewPage(item.getBoardUrl())">
                 <template #icon>
                   <ArrowRightIcon />
                 </template>
@@ -127,14 +124,7 @@ onUnmounted(() => {
   left: 0;
   top: 0;
   height: 100%;
-  background-image: linear-gradient(45deg,
-      rgba(255, 255, 255, 0.15) 25%,
-      transparent 25%,
-      transparent 50%,
-      rgba(255, 255, 255, 0.15) 50%,
-      rgba(255, 255, 255, 0.15) 75%,
-      transparent 75%,
-      transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-color: #006ace;
   background-size: 40px 40px;
   animation: progressbar 2s linear infinite;
@@ -142,50 +132,22 @@ onUnmounted(() => {
 }
 
 .progress-warrper[data-status='0'] {
-  background-image: linear-gradient(45deg,
-      rgba(255, 255, 255, 0.15) 25%,
-      transparent 25%,
-      transparent 50%,
-      rgba(255, 255, 255, 0.15) 50%,
-      rgba(255, 255, 255, 0.15) 75%,
-      transparent 75%,
-      transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-color: #3d3d3d;
 }
 
 .progress-warrper[data-status='2'] {
-  background-image: linear-gradient(45deg,
-      rgba(255, 255, 255, 0.15) 25%,
-      transparent 25%,
-      transparent 50%,
-      rgba(255, 255, 255, 0.15) 50%,
-      rgba(255, 255, 255, 0.15) 75%,
-      transparent 75%,
-      transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-color: #ffa41a;
 }
 
 .progress-warrper[data-status='3'] {
-  background-image: linear-gradient(45deg,
-      rgba(255, 255, 255, 0.15) 25%,
-      transparent 25%,
-      transparent 50%,
-      rgba(255, 255, 255, 0.15) 50%,
-      rgba(255, 255, 255, 0.15) 75%,
-      transparent 75%,
-      transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-color: #14cc2c;
 }
 
 .progress-warrper[data-status='4'] {
-  background-image: linear-gradient(45deg,
-      rgba(255, 255, 255, 0.15) 25%,
-      transparent 25%,
-      transparent 50%,
-      rgba(255, 255, 255, 0.15) 50%,
-      rgba(255, 255, 255, 0.15) 75%,
-      transparent 75%,
-      transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-color: #cf4242;
 }
 
