@@ -133,5 +133,5 @@ onMounted(async () => {
 
 <route lang="yaml">
 meta:
-  layout: index
+  layout: normal-page
 </route>

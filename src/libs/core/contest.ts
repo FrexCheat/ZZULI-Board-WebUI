@@ -1,6 +1,7 @@
 import dayjs, { Dayjs } from 'dayjs'
-import { BalloonData, ProblemData } from '../types/basic-type'
+import { BalloonData, ProblemData } from '../types/contest'
 import { ACMContestExtraData, ContestInstance, GPLTContestExtraData } from '../types/contest'
+import { RecordData, StudentData, TeamData } from '../types/basic-type'
 
 export class Contest {
   id: string
@@ -193,5 +194,20 @@ export async function getContestAdminConfig(id: string): Promise<Contest> {
   if (resp) {
     return createContest(resp)
   }
+  return resp
+}
+
+export async function getStudentList(id: string): Promise<StudentData[]> {
+  const resp = await get<StudentData[]>('/api/member/list?contest_id=' + id)
+  return resp
+}
+
+export async function getTeamList(id: string): Promise<TeamData[]> {
+  const resp = await get<TeamData[]>('/api/team/list?contest_id=' + id)
+  return resp
+}
+
+export async function getRecordList(id: string): Promise<RecordData[]> {
+  const resp = await get<RecordData[]>('/api/record?contest_id=' + id)
   return resp
 }

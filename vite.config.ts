@@ -13,7 +13,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         secure: false,
-        target: 'https://board.frexlink.cn/api',
+        target: 'http://110.42.56.156:5011/api',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },

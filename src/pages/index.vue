@@ -11,6 +11,9 @@ const onUpdateContestStatus = () => {
     contest.updateContestStatus()
   })
 }
+const openNewPage = (url: string) => {
+  window.open(url)
+}
 watch(searchInput, (newValue) => {
   if (!newValue) {
     searchList.value = contestList.value
@@ -74,14 +77,14 @@ onUnmounted(() => {
             </div>
             <div flex flex-row float-right gap-0.4rem justify-end>
               <t-button theme="primary" shape="round" size="large" v-if="item.contestStatus === 1"
-                @click="router.push(item.getRegisterUrl())">
+                @click="openNewPage(item.getRegisterUrl())">
                 <template #icon>
                   <UserAddIcon />
                 </template>
                 报名
               </t-button>
               <t-button theme="primary" shape="circle" size="large" v-if="item.contestStatus >= 3"
-                @click="router.push(item.getBoardUrl())">
+                @click="openNewPage(item.getBoardUrl())">
                 <template #icon>
                   <ArrowRightIcon />
                 </template>
@@ -193,5 +196,5 @@ sup {
 
 <route lang="yaml">
 meta:
-  layout: index
+  layout: normal-page
 </route>

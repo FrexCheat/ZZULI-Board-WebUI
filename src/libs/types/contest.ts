@@ -1,4 +1,14 @@
-import { BalloonData, ProblemData } from './basic-type'
+export interface BalloonData {
+  id: string
+  color: string
+}
+
+export interface ProblemData {
+  id: string
+  label: string
+  name: string
+  score: number
+}
 
 export interface ACMContestExtraData {
   banner: string
