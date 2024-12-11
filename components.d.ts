@@ -11,7 +11,6 @@ declare module 'vue' {
     CloudDownloadIcon: typeof import('tdesign-icons-vue-next')['CloudDownloadIcon']
     DeleteIcon: typeof import('tdesign-icons-vue-next')['DeleteIcon']
     Footer: typeof import('./src/components/Footer.vue')['default']
-    InfoCircleFilledIcon: typeof import('tdesign-icons-vue-next')['InfoCircleFilledIcon']
     JumpIcon: typeof import('tdesign-icons-vue-next')['JumpIcon']
     Loading: typeof import('./src/components/Loading.vue')['default']
     Logo: typeof import('./src/components/icon/Logo.vue')['default']
