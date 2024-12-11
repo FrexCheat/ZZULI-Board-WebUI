@@ -10,6 +10,7 @@ const boardLoading = ref(true)
 const currentView = ref(0)
 const openModal = ref(false)
 const modalTitle = ref('')
+const visibleItems = ref<number[]>([])
 
 const teamList = ref([] as TeamData[])
 const studentList = ref([] as StudentData[])
@@ -42,8 +43,11 @@ const getContestData = async () => {
   }
   boardLoading.value = false
 }
-const onChangeMode = (mode: number) => {
+const onChangeMode = async (mode: number) => {
   currentView.value = mode
+  visibleItems.value = []
+  await nextTick()
+  checkVisibility()
 }
 const onTeamRowClick = (team_id: number) => {
   const team = teamList.value.find((item) => item.id === team_id)
@@ -58,11 +62,40 @@ const onStudentRowClick = (member_id: string) => {
   tableData.value = buildStudentTableData(student)
   openModal.value = true
 }
+const isElementVisible = (index: number) => {
+  const target = document.getElementById(`node_${index}`)
+  if (target) {
+    const rect = target.getBoundingClientRect()
+    const windowHeight = window.innerHeight || document.documentElement.clientHeight
+    const isVisible = rect.top < windowHeight && rect.bottom >= 0
+    return isVisible
+  }
+  return false
+}
+const checkVisibility = () => {
+  if (currentView.value === 2) return;
+  let target = currentView.value === 0 ? boardTeamData.value : boardStudentData.value
+  target.forEach((_, index) => {
+    if (isElementVisible(index)) {
+      if (!visibleItems.value.includes(index)) {
+        visibleItems.value.push(index)
+      }
+    } else {
+      const itemIndex = visibleItems.value.indexOf(index)
+      if (itemIndex !== -1) {
+        visibleItems.value.splice(itemIndex, 1)
+      }
+    }
+  })
+}
 onMounted(async () => {
   await getContestData()
+  checkVisibility()
+  window.addEventListener('scroll', checkVisibility)
 })
 onUnmounted(() => {
   clearInterval(interval.value)
+  window.removeEventListener('scroll', checkVisibility)
 })
 </script>
 
@@ -81,7 +114,8 @@ onUnmounted(() => {
         <strong text-18px font-800>{{ contestData?.statusStr }}</strong>
       </div>
       <div class="progress">
-        <div :data-status="contestData?.contestStatus" class="progress-warrper" :style="{ width: `${contestData?.progressRatio}%` }"></div>
+        <div :data-status="contestData?.contestStatus" class="progress-warrper"
+          :style="{ width: `${contestData?.progressRatio}%` }"></div>
       </div>
     </div>
     <div grid grid-cols-2 w-1270px mt-1>
@@ -94,82 +128,87 @@ onUnmounted(() => {
       </div>
     </div>
     <div box-border w-1270px mt-5px backdrop-blur border-1 border-blue-600 border-solid rounded-md bg-gray-700 bg-op-30>
-      <div v-if="currentView !== 2" mt-5 ml-20>
-        <span>🤓☝️ 我们已和 Chrome、Firefox、Edge、Safari 等浏览器进行深度合作，它们允许我们按 Ctrl+F 进行全页搜索</span>
+      <div v-for="(item, index) in boardTeamData" :key="item.team_id" v-if="currentView === 0" box-border flex flex-col
+        gap-2 w-1270px py-40px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-155px>
+        <div v-if="visibleItems.includes(index)" @click="onTeamRowClick(item.team_id)">
+          <div pl-210px>
+            <span>{{ item.team_name }} ————— {{ item.college }} ————— {{ item.class }}</span>
+          </div>
+          <div box-border flex items-center w-1270px>
+            <div inline-flex justify-center items-center w-160px>
+              <span text-yellow font-800 italic text-3xl>{{ item.rank }}</span>
+            </div>
+            <div class="p-head">
+              <img src="/process-zzuli.png" alt="school" size-40px my-5px mx-5px />
+            </div>
+            <div class="p-pipe">
+              <t-tooltip placement="bottom" :content="`${item.part1.score} / 1000`">
+                <img src="/process-level1.png" alt="l1" class="p-level" :style="`width:${item.part1.ratio}%`" />
+                <img src="/process-level1-node.png" alt="l1-node" class="p-level-node" />
+              </t-tooltip>
+            </div>
+            <div class="p-node"></div>
+            <div class="p-pipe">
+              <t-tooltip placement="bottom" :content="`${item.part2.score} / 1000`">
+                <img v-if="item.part1.status" src="/process-level2.png" alt="l2" class="p-level"
+                  :style="`width:${item.part2.ratio}%`" />
+                <img v-else src="/process-level0.png" alt="l2" class="p-level" :style="`width:${item.part2.ratio}%`" />
+              </t-tooltip>
+              <img v-if="item.part1.status" src="/process-level2-node.png" alt="l2-node" class="p-level-node" />
+            </div>
+            <div class="p-node"></div>
+            <div class="p-pipe">
+              <t-tooltip placement="bottom" :content="`${item.part3.score} / 900`">
+                <img v-if="item.part2.status" src="/process-level3.png" alt="l3" class="p-level"
+                  :style="`width:${item.part3.ratio}%`" />
+                <img v-else src="/process-level0.png" alt="l3" class="p-level" :style="`width:${item.part3.ratio}%`" />
+              </t-tooltip>
+              <img v-if="item.part2.status" src="/process-level3-node.png" alt="l3-node" class="p-level-node" />
+            </div>
+            <div class="p-end"></div>
+            <div inline-flex justify-center items-center w-160px>
+              <span text-yellow font-800 italic text-3xl>{{ item.sum }}</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div v-for="item in boardTeamData" :key="item.team_id" v-if="currentView === 0" box-border flex flex-col gap-2 w-1270px py-40px px-10px odd:bg-gray-600 odd:bg-op-30 @click="onTeamRowClick(item.team_id)">
-        <div pl-210px>
-          <span>{{ item.team_name }} ————— {{ item.college }} ————— {{ item.class }}</span>
-        </div>
-        <div box-border flex items-center w-1270px>
-          <div inline-flex justify-center items-center w-160px>
-            <span text-yellow font-800 italic text-3xl>{{ item.rank }}</span>
+      <div v-else-if="currentView === 1" v-for="(item, index) in boardStudentData" :key="item.member_id" box-border flex
+        flex-col gap-2 w-1270px py-40px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-155px>
+        <div v-if="visibleItems.includes(index)" @click="onStudentRowClick(item.member_id)">
+          <div pl-210px>
+            <span>{{ item.name }} ————— {{ item.college }} ————— {{ item.class }}</span>
           </div>
-          <div class="p-head">
-            <img src="/process-zzuli.png" alt="school" size-40px my-5px mx-5px />
-          </div>
-          <div class="p-pipe">
-            <t-tooltip placement="bottom" :content="`${item.part1.score} / 1000`">
-              <img src="/process-level1.png" alt="l1" class="p-level" :style="`width:${item.part1.ratio}%`" />
-              <img src="/process-level1-node.png" alt="l1-node" class="p-level-node" />
-            </t-tooltip>
-          </div>
-          <div class="p-node"></div>
-          <div class="p-pipe">
-            <t-tooltip placement="bottom" :content="`${item.part2.score} / 1000`">
-              <img v-if="item.part1.status" src="/process-level2.png" alt="l2" class="p-level" :style="`width:${item.part2.ratio}%`" />
-              <img v-else src="/process-level0.png" alt="l2" class="p-level" :style="`width:${item.part2.ratio}%`" />
-            </t-tooltip>
-            <img v-if="item.part1.status" src="/process-level2-node.png" alt="l2-node" class="p-level-node" />
-          </div>
-          <div class="p-node"></div>
-          <div class="p-pipe">
-            <t-tooltip placement="bottom" :content="`${item.part3.score} / 900`">
-              <img v-if="item.part2.status" src="/process-level3.png" alt="l3" class="p-level" :style="`width:${item.part3.ratio}%`" />
-              <img v-else src="/process-level0.png" alt="l3" class="p-level" :style="`width:${item.part3.ratio}%`" />
-            </t-tooltip>
-            <img v-if="item.part2.status" src="/process-level3-node.png" alt="l3-node" class="p-level-node" />
-          </div>
-          <div class="p-end"></div>
-          <div inline-flex justify-center items-center w-160px>
-            <span text-yellow font-800 italic text-3xl>{{ item.sum }}</span>
-          </div>
-        </div>
-      </div>
-      <div v-else-if="currentView === 1" v-for="item in boardStudentData" :key="item.member_id" box-border flex flex-col gap-2 w-1270px py-40px px-10px odd:bg-gray-600 odd:bg-op-30 @click="onStudentRowClick(item.member_id)">
-        <div pl-210px>
-          <span>{{ item.name }} ————— {{ item.college }} ————— {{ item.class }}</span>
-        </div>
-        <div box-border flex items-center w-1270px>
-          <div inline-flex justify-center items-center w-160px>
-            <span text-yellow font-800 italic text-3xl>{{ item.rank }}</span>
-          </div>
-          <div class="p-head">
-            <img src="/process-zzuli.png" alt="school" size-40px my-5px mx-5px />
-          </div>
-          <div class="p-pipe">
-            <t-tooltip placement="bottom" :content="`${item.part1.score} / 100`">
-              <img src="/process-level1.png" alt="l1" class="p-level" :style="`width:${item.part1.ratio}%`" />
-              <img src="/process-level1-node.png" alt="l1-node" class="p-level-node" />
-            </t-tooltip>
-          </div>
-          <div class="p-node"></div>
-          <div class="p-pipe">
-            <t-tooltip placement="bottom" :content="`${item.part2.score} / 100`">
-              <img src="/process-level2.png" alt="l2" class="p-level" :style="`width:${item.part2.ratio}%`" />
-            </t-tooltip>
-            <img src="/process-level2-node.png" alt="l2-node" class="p-level-node" />
-          </div>
-          <div class="p-node"></div>
-          <div class="p-pipe">
-            <t-tooltip placement="bottom" :content="`${item.part3.score} / 90`">
-              <img src="/process-level3.png" alt="l3" class="p-level" :style="`width:${item.part3.ratio}%`" />
-            </t-tooltip>
-            <img src="/process-level3-node.png" alt="l3-node" class="p-level-node" />
-          </div>
-          <div class="p-end"></div>
-          <div inline-flex justify-center items-center w-160px>
-            <span text-yellow font-800 italic text-3xl>{{ item.sum }}</span>
+          <div box-border flex items-center w-1270px>
+            <div inline-flex justify-center items-center w-160px>
+              <span text-yellow font-800 italic text-3xl>{{ item.rank }}</span>
+            </div>
+            <div class="p-head">
+              <img src="/process-zzuli.png" alt="school" size-40px my-5px mx-5px />
+            </div>
+            <div class="p-pipe">
+              <t-tooltip placement="bottom" :content="`${item.part1.score} / 100`">
+                <img src="/process-level1.png" alt="l1" class="p-level" :style="`width:${item.part1.ratio}%`" />
+                <img src="/process-level1-node.png" alt="l1-node" class="p-level-node" />
+              </t-tooltip>
+            </div>
+            <div class="p-node"></div>
+            <div class="p-pipe">
+              <t-tooltip placement="bottom" :content="`${item.part2.score} / 100`">
+                <img src="/process-level2.png" alt="l2" class="p-level" :style="`width:${item.part2.ratio}%`" />
+              </t-tooltip>
+              <img src="/process-level2-node.png" alt="l2-node" class="p-level-node" />
+            </div>
+            <div class="p-node"></div>
+            <div class="p-pipe">
+              <t-tooltip placement="bottom" :content="`${item.part3.score} / 90`">
+                <img src="/process-level3.png" alt="l3" class="p-level" :style="`width:${item.part3.ratio}%`" />
+              </t-tooltip>
+              <img src="/process-level3-node.png" alt="l3-node" class="p-level-node" />
+            </div>
+            <div class="p-end"></div>
+            <div inline-flex justify-center items-center w-160px>
+              <span text-yellow font-800 italic text-3xl>{{ item.sum }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -189,7 +228,8 @@ onUnmounted(() => {
       </div>
     </div>
   </div>
-  <t-dialog v-model:visible="openModal" closeOnOverlayClick :header="false" :footer="false" :closeBtn="false" width="1230" placement="top" top="50px">
+  <t-dialog v-model:visible="openModal" closeOnOverlayClick :header="false" :footer="false" :closeBtn="false"
+    width="90%" placement="top" top="50px">
     <div flex flex-col gap-3 items-center>
       <h2>{{ modalTitle }}</h2>
       <t-table row-key="member_id" :data="tableData" :columns="tableColumns" bordered> </t-table>
@@ -295,7 +335,7 @@ onUnmounted(() => {
 
 .progress-warrper[data-status='2'] {
   background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-color: #ffa41a;
+  background-color: #f18d09;
 }
 
 .progress-warrper[data-status='3'] {
