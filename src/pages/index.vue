@@ -43,8 +43,7 @@ onUnmounted(() => {
       <div flex flex-col gap-1rem mt-15px>
         <Loading v-if="contestLoading"></Loading>
         <t-empty v-else-if="searchList.length === 0" size="large" />
-        <div v-else v-for="item in searchList" :key="item.id" flex flex-col gap-0.7rem border-b-solid border-b-slate-200
-          border-b-2>
+        <div v-else v-for="item in searchList" :key="item.id" flex flex-col gap-0.7rem border-b-solid border-b-slate-200 border-b-2>
           <div flex gap-10px text-size-1.3rem items-center>
             <div>
               <img :src="item.getLogo()" alt="logo" block size-2.5rem />
@@ -72,20 +71,17 @@ onUnmounted(() => {
                 <strong>{{ item.statusStr }}</strong>
               </div>
               <div class="progress">
-                <div :data-status="item.contestStatus" class="progress-warrper"
-                  :style="{ width: `${item.progressRatio}%` }"></div>
+                <div :data-status="item.contestStatus" class="progress-warrper" :style="{ width: `${item.progressRatio}%` }"></div>
               </div>
             </div>
             <div flex flex-row float-right gap-0.4rem justify-end>
-              <t-button theme="primary" shape="round" size="large" v-if="item.contestStatus === 1"
-                @click="openNewPage(item.getRegisterUrl())">
+              <t-button theme="primary" shape="round" size="large" v-if="item.contestStatus === 1" @click="openNewPage(item.getRegisterUrl())">
                 <template #icon>
                   <UserAddIcon />
                 </template>
                 报名
               </t-button>
-              <t-button theme="primary" shape="circle" size="large" v-if="item.contestStatus >= 3"
-                @click="openNewPage(item.getBoardUrl())">
+              <t-button theme="primary" shape="circle" size="large" v-if="item.contestStatus >= 3" @click="openNewPage(item.getBoardUrl())">
                 <template #icon>
                   <ArrowRightIcon />
                 </template>

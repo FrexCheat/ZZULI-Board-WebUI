@@ -73,7 +73,7 @@ const isElementVisible = (index: number) => {
   return false
 }
 const checkVisibility = () => {
-  if (currentView.value === 2) return;
+  if (currentView.value === 2) return
   let target = currentView.value === 0 ? boardTeamData.value : boardStudentData.value
   target.forEach((_, index) => {
     if (isElementVisible(index)) {
@@ -114,8 +114,7 @@ onUnmounted(() => {
         <strong text-18px font-800>{{ contestData?.statusStr }}</strong>
       </div>
       <div class="progress">
-        <div :data-status="contestData?.contestStatus" class="progress-warrper"
-          :style="{ width: `${contestData?.progressRatio}%` }"></div>
+        <div :data-status="contestData?.contestStatus" class="progress-warrper" :style="{ width: `${contestData?.progressRatio}%` }"></div>
       </div>
     </div>
     <div grid grid-cols-2 w-1270px mt-1>
@@ -128,8 +127,7 @@ onUnmounted(() => {
       </div>
     </div>
     <div box-border w-1270px mt-5px backdrop-blur border-1 border-blue-600 border-solid rounded-md bg-gray-700 bg-op-30>
-      <div v-for="(item, index) in boardTeamData" :key="item.team_id" v-if="currentView === 0" box-border flex flex-col
-        gap-2 w-1270px py-40px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-155px>
+      <div v-for="(item, index) in boardTeamData" :key="item.team_id" v-if="currentView === 0" box-border flex flex-col gap-2 w-1270px py-40px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-155px>
         <div v-if="visibleItems.includes(index)" @click="onTeamRowClick(item.team_id)">
           <div pl-210px>
             <span>{{ item.team_name }} ————— {{ item.college }} ————— {{ item.class }}</span>
@@ -150,8 +148,7 @@ onUnmounted(() => {
             <div class="p-node"></div>
             <div class="p-pipe">
               <t-tooltip placement="bottom" :content="`${item.part2.score} / 1000`">
-                <img v-if="item.part1.status" src="/process-level2.png" alt="l2" class="p-level"
-                  :style="`width:${item.part2.ratio}%`" />
+                <img v-if="item.part1.status" src="/process-level2.png" alt="l2" class="p-level" :style="`width:${item.part2.ratio}%`" />
                 <img v-else src="/process-level0.png" alt="l2" class="p-level" :style="`width:${item.part2.ratio}%`" />
               </t-tooltip>
               <img v-if="item.part1.status" src="/process-level2-node.png" alt="l2-node" class="p-level-node" />
@@ -159,8 +156,7 @@ onUnmounted(() => {
             <div class="p-node"></div>
             <div class="p-pipe">
               <t-tooltip placement="bottom" :content="`${item.part3.score} / 900`">
-                <img v-if="item.part2.status" src="/process-level3.png" alt="l3" class="p-level"
-                  :style="`width:${item.part3.ratio}%`" />
+                <img v-if="item.part2.status" src="/process-level3.png" alt="l3" class="p-level" :style="`width:${item.part3.ratio}%`" />
                 <img v-else src="/process-level0.png" alt="l3" class="p-level" :style="`width:${item.part3.ratio}%`" />
               </t-tooltip>
               <img v-if="item.part2.status" src="/process-level3-node.png" alt="l3-node" class="p-level-node" />
@@ -172,8 +168,7 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
-      <div v-else-if="currentView === 1" v-for="(item, index) in boardStudentData" :key="item.member_id" box-border flex
-        flex-col gap-2 w-1270px py-40px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-155px>
+      <div v-else-if="currentView === 1" v-for="(item, index) in boardStudentData" :key="item.member_id" box-border flex flex-col gap-2 w-1270px py-40px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-155px>
         <div v-if="visibleItems.includes(index)" @click="onStudentRowClick(item.member_id)">
           <div pl-210px>
             <span>{{ item.name }} ————— {{ item.college }} ————— {{ item.class }}</span>
@@ -228,8 +223,7 @@ onUnmounted(() => {
       </div>
     </div>
   </div>
-  <t-dialog v-model:visible="openModal" closeOnOverlayClick :header="false" :footer="false" :closeBtn="false"
-    width="90%" placement="top" top="50px">
+  <t-dialog v-model:visible="openModal" closeOnOverlayClick :header="false" :footer="false" :closeBtn="false" width="90%" placement="top" top="50px">
     <div flex flex-col gap-3 items-center>
       <h2>{{ modalTitle }}</h2>
       <t-table row-key="member_id" :data="tableData" :columns="tableColumns" bordered> </t-table>
