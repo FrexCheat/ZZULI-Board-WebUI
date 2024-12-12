@@ -40,10 +40,10 @@ export function buildTeamBoard(contest_data: Contest, student_data: StudentData[
     if ('standard1' in contest_data.extra && team_board.part1.score >= (contest_data.extra.standard1 as number)) {
       team_board.part1.status = true
       team_board.sum = team_board.part1.score + team_board.part2.score
-    }
-    if ('standard2' in contest_data.extra && team_board.part2.score >= (contest_data.extra.standard2 as number)) {
-      team_board.part2.status = true
-      team_board.sum = team_board.part1.score + team_board.part2.score + team_board.part3.score
+      if ('standard2' in contest_data.extra && team_board.part2.score >= (contest_data.extra.standard2 as number)) {
+        team_board.part2.status = true
+        team_board.sum = team_board.part1.score + team_board.part2.score + team_board.part3.score
+      }
     }
 
     res.push(team_board)
