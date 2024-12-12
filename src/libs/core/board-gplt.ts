@@ -37,11 +37,11 @@ export function buildTeamBoard(contest_data: Contest, student_data: StudentData[
     team_board.part2.ratio = (team_board.part2.score / 1000) * 100
     team_board.part3.ratio = (team_board.part3.score / 900) * 100
     team_board.sum = team_board.part1.score
-    if ('standard1' in contest_data.extra && team_board.part1.score > (contest_data.extra.standard1 as number)) {
+    if ('standard1' in contest_data.extra && team_board.part1.score >= (contest_data.extra.standard1 as number)) {
       team_board.part1.status = true
       team_board.sum = team_board.part1.score + team_board.part2.score
-    } else if ('standard2' in contest_data.extra && team_board.part2.score > (contest_data.extra.standard2 as number)) {
-      team_board.part1.status = true
+    }
+    if ('standard2' in contest_data.extra && team_board.part2.score >= (contest_data.extra.standard2 as number)) {
       team_board.part2.status = true
       team_board.sum = team_board.part1.score + team_board.part2.score + team_board.part3.score
     }

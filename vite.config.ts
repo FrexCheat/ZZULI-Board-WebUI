@@ -9,16 +9,16 @@ import { VueRouterAutoImports } from 'unplugin-vue-router'
 import { TDesignResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig({
-  server: {
-    proxy: {
-      '/api': {
-        secure: false,
-        target: 'https://board.frexlink.cn/api',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-    },
-  },
+  // server: {
+  //   proxy: {
+  //     '/api': {
+  //       secure: false,
+  //       target: 'https://board.frexlink.cn/api',
+  //       changeOrigin: true,
+  //       rewrite: (path) => path.replace(/^\/api/, ''),
+  //     },
+  //   },
+  // },
   plugins: [
     UnoCSS(),
     VueRouter({

@@ -6,6 +6,7 @@ import { buildStudentBoard, buildStudentTableData, buildTeamBoard, exportSingle,
 import { StudentBoardData, TeamBoardData } from '../../libs/types/board-gplt'
 const route = useRoute()
 const interval = ref<number>()
+const interval_update = ref<number>()
 const boardLoading = ref(true)
 const currentView = ref(0)
 const openModal = ref(false)
@@ -39,6 +40,17 @@ const getContestData = async () => {
       interval.value = setInterval(() => {
         contestData.value!.updateContestStatus()
       }, 1000)
+      interval_update.value = setInterval(async () => {
+        if (contestData.value) {
+          teamList.value = await getTeamList(contestId)
+          studentList.value = await getStudentList(contestId)
+          recordList.value = await getRecordList(contestId)
+          // build board data
+          boardTeamData.value = buildTeamBoard(contestData.value, studentList.value, teamList.value, recordList.value)
+          boardStudentData.value = buildStudentBoard(contestData.value, studentList.value, recordList.value)
+          checkVisibility()
+        }
+      }, 30000)
     }
   }
   boardLoading.value = false
@@ -95,6 +107,7 @@ onMounted(async () => {
 })
 onUnmounted(() => {
   clearInterval(interval.value)
+  clearInterval(interval_update.value)
   window.removeEventListener('scroll', checkVisibility)
 })
 </script>
