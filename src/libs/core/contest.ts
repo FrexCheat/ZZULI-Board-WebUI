@@ -175,7 +175,7 @@ export async function getContestList(): Promise<Contest[]> {
   const resp = await get<ContestInstance[]>('/api/contest/list')
   if (resp) {
     const res = resp.map((item) => createContest(item))
-    res.sort((a, b) => a.start_time - b.start_time)
+    res.sort((a, b) => b.start_time - a.start_time)
     return res
   }
   return resp
