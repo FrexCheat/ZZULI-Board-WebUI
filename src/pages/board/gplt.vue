@@ -40,17 +40,18 @@ const getContestData = async () => {
       interval.value = setInterval(() => {
         contestData.value!.updateContestStatus()
       }, 1000)
-      interval_update.value = setInterval(async () => {
-        if (contestData.value) {
-          teamList.value = await getTeamList(contestId)
-          studentList.value = await getStudentList(contestId)
-          recordList.value = await getRecordList(contestId)
-          // build board data
-          boardTeamData.value = buildTeamBoard(contestData.value, studentList.value, teamList.value, recordList.value)
-          boardStudentData.value = buildStudentBoard(contestData.value, studentList.value, recordList.value)
-          checkVisibility()
-        }
-      }, 30000)
+      if (contestData.value.getContestStatus() === ContestStatus.RUNNING) {
+        interval_update.value = setInterval(async () => {
+          if (contestData.value) {
+            teamList.value = await getTeamList(contestId)
+            studentList.value = await getStudentList(contestId)
+            recordList.value = await getRecordList(contestId)
+            // build board data
+            boardTeamData.value = buildTeamBoard(contestData.value, studentList.value, teamList.value, recordList.value)
+            boardStudentData.value = buildStudentBoard(contestData.value, studentList.value, recordList.value)
+          }
+        }, 30000)
+      }
     }
   }
   boardLoading.value = false
@@ -140,7 +141,7 @@ onUnmounted(() => {
       </div>
     </div>
     <div box-border w-1270px mt-5px backdrop-blur border-1 border-blue-600 border-solid rounded-md bg-gray-700 bg-op-30>
-      <div v-for="(item, index) in boardTeamData" :key="item.team_id" v-if="currentView === 0" box-border flex flex-col gap-2 w-1270px py-40px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-155px>
+      <div v-for="(item, index) in boardTeamData" :key="item.team_id" v-if="currentView === 0" box-border flex flex-col gap-2 w-1270px py-20px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-120px>
         <div v-if="visibleItems.includes(index)" @click="onTeamRowClick(item.team_id)">
           <div pl-210px>
             <span>{{ item.team_name }} ————— {{ item.college }} ————— {{ item.class }}</span>
@@ -181,7 +182,7 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
-      <div v-else-if="currentView === 1" v-for="(item, index) in boardStudentData" :key="item.member_id" box-border flex flex-col gap-2 w-1270px py-40px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-155px>
+      <div v-else-if="currentView === 1" v-for="(item, index) in boardStudentData" :key="item.member_id" box-border flex flex-col gap-2 w-1270px py-20px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-120px>
         <div v-if="visibleItems.includes(index)" @click="onStudentRowClick(item.member_id)">
           <div pl-210px>
             <span>{{ item.name }} ————— {{ item.college }} ————— {{ item.class }}</span>
