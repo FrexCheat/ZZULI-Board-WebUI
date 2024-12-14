@@ -2,7 +2,7 @@
 import { MessagePlugin, TableProps } from 'tdesign-vue-next'
 import { Contest, getContestNormalConfig, getRecordList, getStudentList, getTeamList } from '../../libs/core/contest'
 import { RecordData, StudentData, TeamData } from '../../libs/types/basic-type'
-import { buildStudentBoard, buildStudentTableData, buildTeamBoard, exportSingle, exportTeam, tableColumns } from '../../libs/core/board-gplt'
+import { buildStudentBoard, buildStudentTableData, buildTeamBoard, exportSingle, exportTeam, tableColumns, getSchoolAvatar } from '../../libs/core/board-gplt'
 import { StudentBoardData, TeamBoardData } from '../../libs/types/board-gplt'
 const route = useRoute()
 const interval = ref<number>()
@@ -144,14 +144,14 @@ onUnmounted(() => {
       <div v-for="(item, index) in boardTeamData" :key="item.team_id" v-if="currentView === 0" box-border flex flex-col gap-2 w-1270px py-20px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-115px>
         <div v-if="visibleItems.includes(index)" @click="onTeamRowClick(item.team_id)">
           <div pl-210px>
-            <span>{{ item.team_name }} ————— {{ item.college }} ————— {{ item.class }}</span>
+            <span>{{ item.team_name }} ——— {{ item.school }} ——— {{ item.college }} ——— {{ item.class }}</span>
           </div>
           <div box-border flex items-center w-1270px>
             <div inline-flex justify-center items-center w-160px>
               <span text-yellow font-800 italic text-3xl>{{ item.rank }}</span>
             </div>
             <div class="p-head">
-              <img src="/process-zzuli.png" alt="school" size-40px my-5px mx-5px />
+              <img :src="getSchoolAvatar(item.school)" alt="school" size-40px my-5px mx-5px />
             </div>
             <div class="p-pipe">
               <t-tooltip placement="bottom" :content="`${item.part1.score} / 1000`">
@@ -185,14 +185,14 @@ onUnmounted(() => {
       <div v-else-if="currentView === 1" v-for="(item, index) in boardStudentData" :key="item.member_id" box-border flex flex-col gap-2 w-1270px py-20px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-115px>
         <div v-if="visibleItems.includes(index)" @click="onStudentRowClick(item.member_id)">
           <div pl-210px>
-            <span>{{ item.name }} ————— {{ item.college }} ————— {{ item.class }}</span>
+            <span>{{ item.name }} ——— {{ item.school }} ——— {{ item.college }} ——— {{ item.class }}</span>
           </div>
           <div box-border flex items-center w-1270px>
             <div inline-flex justify-center items-center w-160px>
               <span text-yellow font-800 italic text-3xl>{{ item.rank }}</span>
             </div>
             <div class="p-head">
-              <img src="/process-zzuli.png" alt="school" size-40px my-5px mx-5px />
+              <img :src="getSchoolAvatar(item.school)" alt="school" size-40px my-5px mx-5px />
             </div>
             <div class="p-pipe">
               <t-tooltip placement="bottom" :content="`${item.part1.score} / 100`">

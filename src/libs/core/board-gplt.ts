@@ -4,6 +4,15 @@ import { StudentBoardData, TeamBoardData } from '../types/board-gplt'
 import { Contest } from './contest'
 import ExcelJS from 'exceljs'
 
+export function getSchoolAvatar(school: string): string {
+  if (school.includes('郑州轻工业大学')) {
+    return '/process-zzuli.png'
+  } else if (school.includes('河南农业大学')) {
+    return '/process-henau.png'
+  }
+  return '/process-zzuli.png'
+}
+
 export function buildTeamBoard(contest_data: Contest, student_data: StudentData[], team_data: TeamData[], record_data: RecordData[]): TeamBoardData[] {
   const res: TeamBoardData[] = []
   const problems = contest_data.problem_list
