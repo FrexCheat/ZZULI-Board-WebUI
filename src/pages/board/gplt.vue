@@ -13,15 +13,15 @@ const openModal = ref(false)
 const modalTitle = ref('')
 const visibleItems = ref<number[]>([])
 
+const contestData = ref<Contest>()
 const teamList = ref([] as TeamData[])
 const studentList = ref([] as StudentData[])
 const recordList = ref([] as RecordData[])
-const contestData = ref<Contest>()
 const boardTeamData = ref([] as TeamBoardData[])
 const boardStudentData = ref([] as StudentBoardData[])
-const tableData = ref([] as TableProps['data'])
 const teamViewData = ref([] as TeamBoardData[])
 const studentViewData = ref([] as StudentBoardData[])
+const tableData = ref([] as TableProps['data'])
 const getContestData = async () => {
   const contestId = route.query.contest_id as string
   if (!contestId) {
@@ -61,6 +61,8 @@ const getContestData = async () => {
   boardLoading.value = false
 }
 const onChangeMode = async (mode: number) => {
+  teamViewData.value = boardTeamData.value
+  studentViewData.value = boardStudentData.value
   currentView.value = mode
   await updateVisibleStatus()
 }
@@ -93,6 +95,8 @@ const onStudentRowClick = (member_id: string) => {
   tableData.value = buildStudentTableData(student)
   openModal.value = true
 }
+
+/* ---------------- common functions ---------------- */
 const updateVisibleStatus = async () => {
   visibleItems.value = []
   await nextTick()
@@ -249,13 +253,13 @@ onUnmounted(() => {
         </div>
       </div>
       <div v-else flex gap-20 justify-center m-20>
-        <t-button theme="primary" @click="exportTeam(boardTeamData, boardStudentData, contestData!.title)">
+        <t-button theme="primary" size="large" @click="exportTeam(boardTeamData, boardStudentData, contestData!.title)">
           <template #icon>
             <CloudDownloadIcon />
           </template>
           导出团队排名
         </t-button>
-        <t-button theme="primary" @click="exportSingle(boardStudentData, contestData!.title)">
+        <t-button theme="primary" size="large" @click="exportSingle(boardStudentData, contestData!.title)">
           <template #icon>
             <CloudDownloadIcon />
           </template>
