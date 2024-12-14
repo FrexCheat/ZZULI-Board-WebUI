@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MessagePlugin, TableProps } from 'tdesign-vue-next'
+import { InputProps, MessagePlugin, TableProps } from 'tdesign-vue-next'
 import { Contest, getContestNormalConfig, getRecordList, getStudentList, getTeamList } from '../../libs/core/contest'
 import { RecordData, StudentData, TeamData } from '../../libs/types/basic-type'
 import { buildStudentBoard, buildStudentTableData, buildTeamBoard, exportSingle, exportTeam, tableColumns, getSchoolAvatar } from '../../libs/core/board-gplt'
@@ -20,6 +20,8 @@ const contestData = ref<Contest>()
 const boardTeamData = ref([] as TeamBoardData[])
 const boardStudentData = ref([] as StudentBoardData[])
 const tableData = ref([] as TableProps['data'])
+const teamViewData = ref([] as TeamBoardData[])
+const studentViewData = ref([] as StudentBoardData[])
 const getContestData = async () => {
   const contestId = route.query.contest_id as string
   if (!contestId) {
@@ -34,6 +36,8 @@ const getContestData = async () => {
       // build board data
       boardTeamData.value = buildTeamBoard(contestData.value, studentList.value, teamList.value, recordList.value)
       boardStudentData.value = buildStudentBoard(contestData.value, studentList.value, recordList.value)
+      teamViewData.value = boardTeamData.value
+      studentViewData.value = boardStudentData.value
       // update contest status
       useTitle(`${contestData.value!.title} | ZZULI GPLT Board`)
       contestData.value.updateContestStatus()
@@ -58,9 +62,23 @@ const getContestData = async () => {
 }
 const onChangeMode = async (mode: number) => {
   currentView.value = mode
-  visibleItems.value = []
-  await nextTick()
-  checkVisibility()
+  await updateVisibleStatus()
+}
+const onTeamSearch: InputProps['onChange'] = async (value) => {
+  if (value === '') {
+    teamViewData.value = boardTeamData.value
+  } else {
+    teamViewData.value = boardTeamData.value.filter((item) => item.team_name.includes(value.toString()))
+  }
+  await updateVisibleStatus()
+}
+const onStudentSearch: InputProps['onChange'] = async (value) => {
+  if (value === '') {
+    studentViewData.value = boardStudentData.value
+  } else {
+    studentViewData.value = boardStudentData.value.filter((item) => item.name.includes(value.toString()))
+  }
+  await updateVisibleStatus()
 }
 const onTeamRowClick = (team_id: number) => {
   const team = teamList.value.find((item) => item.id === team_id)
@@ -75,6 +93,11 @@ const onStudentRowClick = (member_id: string) => {
   tableData.value = buildStudentTableData(student)
   openModal.value = true
 }
+const updateVisibleStatus = async () => {
+  visibleItems.value = []
+  await nextTick()
+  await checkVisibility()
+}
 const isElementVisible = (index: number) => {
   const target = document.getElementById(`node_${index}`)
   if (target) {
@@ -85,9 +108,9 @@ const isElementVisible = (index: number) => {
   }
   return false
 }
-const checkVisibility = () => {
+const checkVisibility = async () => {
   if (currentView.value === 2) return
-  let target = currentView.value === 0 ? boardTeamData.value : boardStudentData.value
+  let target = currentView.value === 0 ? teamViewData.value : studentViewData.value
   target.forEach((_, index) => {
     if (isElementVisible(index)) {
       if (!visibleItems.value.includes(index)) {
@@ -103,7 +126,7 @@ const checkVisibility = () => {
 }
 onMounted(async () => {
   await getContestData()
-  checkVisibility()
+  await updateVisibleStatus()
   window.addEventListener('scroll', checkVisibility)
 })
 onUnmounted(() => {
@@ -117,20 +140,19 @@ onUnmounted(() => {
   <Loading v-if="boardLoading" />
   <t-empty v-else-if="!contestData" size="large" />
   <div v-else flex flex-col gap-3 items-center>
+    <!-- 比赛标题 -->
     <span text-3xl font-700>{{ contestData?.title }}</span>
+    <!-- 比赛状态条 -->
     <div flex flex-col flex-1 gap-0.4rem w-1270px>
       <div flex flex-row justify-center items-center gap-3>
-        <div class="circle" v-if="contestData?.contestStatus === 0" bg-neutral-400></div>
-        <div class="circle" v-if="contestData?.contestStatus === 1" bg-sky-700></div>
-        <div class="circle" v-if="contestData?.contestStatus === 2" bg-yellow-500></div>
-        <div class="circle" v-if="contestData?.contestStatus === 3" bg-green-500></div>
-        <div class="circle" v-if="contestData?.contestStatus === 4" bg-red-600></div>
+        <div class="circle" :data-status="contestData?.contestStatus"></div>
         <strong text-18px font-800>{{ contestData?.statusStr }}</strong>
       </div>
       <div class="progress">
         <div :data-status="contestData?.contestStatus" class="progress-warrper" :style="{ width: `${contestData?.progressRatio}%` }"></div>
       </div>
     </div>
+    <!-- 工具选项栏 -->
     <div grid grid-cols-2 w-1270px mt-1>
       <div flex gap-4 align-start>
         <t-button :variant="currentView === 0 ? 'outline' : 'dashed'" ghost @click="onChangeMode(0)">团队排名</t-button>
@@ -140,11 +162,16 @@ onUnmounted(() => {
         <t-button :variant="currentView === 2 ? 'outline' : 'dashed'" ghost @click="onChangeMode(2)">数据导出</t-button>
       </div>
     </div>
-    <div box-border w-1270px mt-5px backdrop-blur border-1 border-blue-600 border-solid rounded-md bg-gray-700 bg-op-30>
-      <div v-for="(item, index) in boardTeamData" :key="item.team_id" v-if="currentView === 0" box-border flex flex-col gap-2 w-1270px py-20px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-115px>
+    <!-- 搜索框 -->
+    <div w-1270px backdrop-blur rounded-md bg-gray-700 bg-op-30>
+      <t-input v-if="currentView === 0" size="large" placeholder="搜索队伍名称" @change="onTeamSearch"></t-input>
+      <t-input v-if="currentView === 1" size="large" placeholder="搜索学生名称" @change="onStudentSearch"></t-input>
+    </div>
+    <div box-border w-1270px backdrop-blur border-1 border-blue-600 border-solid rounded-md bg-gray-700 bg-op-30>
+      <div v-if="currentView === 0" v-for="(item, index) in teamViewData" :key="item.team_id" :id="`node_${index}`" box-border flex flex-col gap-2 w-1270px h-115px py-20px px-10px odd:bg-gray-600 odd:bg-op-30>
         <div v-if="visibleItems.includes(index)" @click="onTeamRowClick(item.team_id)">
           <div pl-210px>
-            <span>{{ item.team_name }} ——— {{ item.school }} ——— {{ item.college }} ——— {{ item.class }}</span>
+            <span>{{ item.team_name }} ——— {{ item.college }} ——— {{ item.class }}</span>
           </div>
           <div box-border flex items-center w-1270px>
             <div inline-flex justify-center items-center w-160px>
@@ -182,10 +209,10 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
-      <div v-else-if="currentView === 1" v-for="(item, index) in boardStudentData" :key="item.member_id" box-border flex flex-col gap-2 w-1270px py-20px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-115px>
+      <div v-else-if="currentView === 1" v-for="(item, index) in studentViewData" :key="item.member_id" box-border flex flex-col gap-2 w-1270px py-20px px-10px odd:bg-gray-600 odd:bg-op-30 :id="`node_${index}`" h-115px>
         <div v-if="visibleItems.includes(index)" @click="onStudentRowClick(item.member_id)">
           <div pl-210px>
-            <span>{{ item.name }} ——— {{ item.school }} ——— {{ item.college }} ——— {{ item.class }}</span>
+            <span>{{ item.name }} ——— {{ item.college }} ——— {{ item.class }}</span>
           </div>
           <div box-border flex items-center w-1270px>
             <div inline-flex justify-center items-center w-160px>
@@ -237,7 +264,7 @@ onUnmounted(() => {
       </div>
     </div>
   </div>
-  <t-dialog v-model:visible="openModal" closeOnOverlayClick :header="false" :footer="false" :closeBtn="false" width="90%" placement="top" top="50px">
+  <t-dialog v-model:visible="openModal" closeOnOverlayClick :header="false" :footer="false" :closeBtn="false" width="90%" placement="center">
     <div flex flex-col gap-3 items-center>
       <h2>{{ modalTitle }}</h2>
       <t-table row-key="member_id" :data="tableData" :columns="tableColumns" bordered> </t-table>
@@ -305,6 +332,26 @@ onUnmounted(() => {
   width: 0.5em;
   height: 0.5em;
   border-radius: 50%;
+}
+
+.circle[data-status='0'] {
+  background-color: #a3a3a3;
+}
+
+.circle[data-status='1'] {
+  background-color: #0369a1;
+}
+
+.circle[data-status='2'] {
+  background-color: #eab308;
+}
+
+.circle[data-status='3'] {
+  background-color: #22c55e;
+}
+
+.circle[data-status='4'] {
+  background-color: #dc2626;
 }
 
 @keyframes progressbar {

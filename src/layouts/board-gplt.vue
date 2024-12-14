@@ -6,20 +6,21 @@ onMounted(async () => {
 </script>
 
 <template>
-  <NavBar />
-  <RouterView />
-  <Footer></Footer>
+  <div id="board-gplt">
+    <NavBar />
+    <RouterView />
+    <Footer></Footer>
+  </div>
 </template>
 
-<style>
-#app {
+<style scoped>
+#board-gplt {
   color: white;
-}
-
-html {
+  width: 100%;
+  min-height: 100vh;
   background: url('/bg-gplt.jpg');
+  background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  background-size: 100% 100%;
 }
 </style>
