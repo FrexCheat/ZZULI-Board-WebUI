@@ -22,21 +22,24 @@
   --td-brand-color-10: #001f47;
 }
 
-html,
-body,
-#app {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-body,
-#app {
+html {
   font-family:
     'CommitMono',
     'Harmony',
     PingFang SC,
     Microsoft YaHei,
     Arial Regular;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
